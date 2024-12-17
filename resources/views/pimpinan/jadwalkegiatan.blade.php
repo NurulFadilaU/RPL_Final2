@@ -35,27 +35,28 @@
       }
       .search-container input {
         padding: 5px;
+        margin-top: 10px;
         font-size: 14px;
         width: 300px;
         border: 1px solid #ccc;
         border-radius: 4px;
       }
       .search-container button {
-        background-color: #4CAF50; /* Green */
-        color: white;
-        padding: 6px 12px;
+        background-color: #b3b1b1;
+        color: black;
+        padding: 4px 7px;
+        font-size: 14px;
         margin-left: 10px;
+        margin-top: 10px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
       }
       .search-container button:hover {
-        background-color: #45a049;
-      }
-      .fc-highlight {
-        background-color: #ffeb3b !important; /* Highlight color */
-        color: black !important;
-      }
+      background-color: #007bff; 
+      color: white; 
+}
+      
     </style>
 </head>
 <body>
@@ -154,28 +155,59 @@
            
       });
 
-      // Search Functionality when pressing "Search" button
-      $('#searchBtn').on('click', function() {
-        var searchTerm = $('#eventSearch').val().toLowerCase();
+      // Fungsi pencarian untuk kalender
+              function handleSearch() {
+                  const query = document.getElementById('eventSearch').value.trim().toLowerCase(); // Ambil input pencarian
+                  const calendar = $('#calendar'); // Asumsikan kalender diinisialisasi dengan FullCalendar
 
-        // Remove previous highlights
-        $('#calendar .fc-event').removeClass('fc-highlight');
+                 
+                  $('.fc-day, .fc-day-grid-event').removeClass('fc-highlight'); // Menambah selector .fc-day-grid-event untuk menargetkan event di year view
 
-        // Filter events based on search input
-        $('#calendar').fullCalendar('clientEvents', function(event) {
-          // Check if the event title matches the search term
-          if (event.title.toLowerCase().indexOf(searchTerm) !== -1) {
-            // Add highlight to the event element
-            $('#calendar').fullCalendar('getEventElement', event).addClass('fc-highlight');
-          }
-        });
-      });
+                  // Ambil semua event dari kalender
+                  const events = calendar.fullCalendar('clientEvents');
 
-      // Optional: Search on input field keyup as well
-      $('#eventSearch').on('keyup', function() {
-        var searchTerm = $(this).val().toLowerCase();
-        $('#searchBtn').click(); // Trigger the search when typing
-      });
+                  // Cari event yang cocok dengan query
+                  const matchedEvents = events.filter(event => 
+                      event.title.toLowerCase().includes(query)
+                  );
+
+                  if (matchedEvents.length > 0) {
+                     
+                      const firstEvent = matchedEvents[0];
+                      
+                      // Arahkan kalender ke tanggal event
+                      calendar.fullCalendar('gotoDate', firstEvent.start);
+
+                      // Highlight hari event
+                      const eventDate = firstEvent.start.format('YYYY-MM-DD'); // Format tanggal
+                     
+                  } else {
+                      alert('No events found for the given search term.');
+                  }
+              }
+
+              
+              document.getElementById('searchBtn').addEventListener('click', handleSearch);
+
+              
+              document.getElementById('eventSearch').addEventListener('keyup', function(event) {
+                  if (event.key === 'Enter') { // Jika tekan Enter
+                      handleSearch();
+                  }
+              });
+
+              // CSS untuk highlight
+              const style = document.createElement('style');
+              style.innerHTML = `
+                  .fc-highlight {
+                      background-color: #ADD8E6 !important; 
+                      border: 2px solid #1E90FF !important; 
+                     
+                  }
+              `;
+              document.head.appendChild(style);
+
+
     });
   </script>
 </body>
